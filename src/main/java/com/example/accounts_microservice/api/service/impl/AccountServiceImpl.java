@@ -7,6 +7,8 @@ import com.example.accounts_microservice.api.enums.ProductType;
 import com.example.accounts_microservice.api.repository.AccountRepository;
 import com.example.accounts_microservice.api.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +16,8 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+
+    private static final Logger logger_console = LoggerFactory.getLogger("console");
 
     private final AccountRepository accountRepository;
 
@@ -33,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Mono<Account> saveCustomerAccount(Account account, AccountCreationRequest accountCreationRequest){
-        Account newAccount = new Account();
+        Account newAccount;
 
         if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
             if(account.getAccountType().equals(ProductType.PLAZO_FIJO)){
@@ -41,6 +45,7 @@ public class AccountServiceImpl implements AccountService {
                 return accountRepository.save(newAccount);
             }
             else {
+                logger_console.info("Account creation failed because is PERSON and is not PLAZO FIJO");
                 return Mono.empty();
             }
         } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
@@ -48,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
                 newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             } else {
+                logger_console.info("Account creation failed because is COMPANY and is not C_CORRIENTE");
                 return Mono.empty();
             }
         } else {
@@ -69,6 +75,7 @@ public class AccountServiceImpl implements AccountService {
                 newAccount = Account.plazoFijoAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             } else {
+                logger_console.info("Account creation failed because is PERSON and is not a valid account type");
                 return Mono.empty();
             }
         } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
@@ -76,31 +83,14 @@ public class AccountServiceImpl implements AccountService {
                 newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             } else {
+                logger_console.info("Account creation failed because is PERSON and is not a valid account type");
                 return Mono.empty();
             }
         } else {
+            logger_console.info("Account creation failed because is not PERSON and neither COMPANY");
             return Mono.empty();
         }
     }
-
-    /*
-
-    *public Mono<Account> create(AccountCreateRequest accountRequest) {
-        Mono<Account> accountMono = accountRepository.findFirstByCustomerId(accountRequest.customerId)
-
-        accountMono.map(account -> {
-            if(account.getType().equals("PLAZO_FIJO)){
-
-            } else {
-            }
-        }).defaultIfEmpty(account -> accountRepository.save(account))
-
-        return accountRepository.save(account);
-    }
-
-    *
-    *
-    * */
 
     @Override
     public Mono<Account> update(String id, Account account) {
