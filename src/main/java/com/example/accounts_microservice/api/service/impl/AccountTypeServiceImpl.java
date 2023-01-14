@@ -1,6 +1,6 @@
 package com.example.accounts_microservice.api.service.impl;
 
-import com.example.accounts_microservice.api.documents.AccountType;
+import com.example.accounts_microservice.api.documents.AccountTypeDoc;
 import com.example.accounts_microservice.api.repository.AccountTypeRepository;
 import com.example.accounts_microservice.api.service.AccountTypeService;
 import lombok.RequiredArgsConstructor;
@@ -15,21 +15,21 @@ public class AccountTypeServiceImpl implements AccountTypeService {
     private final AccountTypeRepository accountTypeRepository;
 
     @Override
-    public Flux<AccountType> findAll() {
+    public Flux<AccountTypeDoc> findAll() {
         return accountTypeRepository.findAll();
     }
 
     @Override
-    public Mono<AccountType> create(AccountType accountType) {
-        return accountTypeRepository.save(accountType);
+    public Mono<AccountTypeDoc> create(AccountTypeDoc accountTypeDoc) {
+        return accountTypeRepository.save(accountTypeDoc);
     }
 
     @Override
-    public Mono<AccountType> update(String id, AccountType accountType) {
-        Mono<AccountType> currentAccountTypeMono = accountTypeRepository.findById(id);
+    public Mono<AccountTypeDoc> update(String id, AccountTypeDoc accountTypeDoc) {
+        Mono<AccountTypeDoc> currentAccountTypeMono = accountTypeRepository.findById(id);
         return currentAccountTypeMono.flatMap(currentAccountType -> {
-            accountType.setId(id);
-            return accountTypeRepository.save(accountType);
+            accountTypeDoc.setId(id);
+            return accountTypeRepository.save(accountTypeDoc);
         });
     }
 
@@ -39,7 +39,7 @@ public class AccountTypeServiceImpl implements AccountTypeService {
     }
 
     @Override
-    public Mono<AccountType> findByAccountTypeCode(int accountTypeCode) {
+    public Mono<AccountTypeDoc> findByAccountTypeCode(int accountTypeCode) {
         return accountTypeRepository.findFirstByAccountTypeCode(accountTypeCode);
     }
 }

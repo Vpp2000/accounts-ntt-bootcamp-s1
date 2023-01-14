@@ -1,7 +1,6 @@
 package com.example.accounts_microservice.api.controller;
 
 import com.example.accounts_microservice.api.documents.Account;
-import com.example.accounts_microservice.api.documents.AccountType;
 import com.example.accounts_microservice.api.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;

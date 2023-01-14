@@ -1,6 +1,6 @@
 package com.example.accounts_microservice.api.controller;
 
-import com.example.accounts_microservice.api.documents.AccountType;
+import com.example.accounts_microservice.api.documents.AccountTypeDoc;
 import com.example.accounts_microservice.api.service.AccountTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,23 +22,23 @@ public class AccountTypeController {
     private final AccountTypeService accountTypeService;
 
     @GetMapping
-    public Flux<AccountType> findAll(){
+    public Flux<AccountTypeDoc> findAll(){
         return accountTypeService.findAll();
     }
 
     @GetMapping("/by-account-type-code/{accountTypeCode}")
-    public Mono<AccountType> findByAccountTypeCode(@PathVariable("accountTypeCode") int accountTypeCode){
+    public Mono<AccountTypeDoc> findByAccountTypeCode(@PathVariable("accountTypeCode") int accountTypeCode){
         return accountTypeService.findByAccountTypeCode(accountTypeCode);
     }
 
     @PostMapping
-    public Mono<AccountType> create(@RequestBody AccountType accountType){
-        return accountTypeService.create(accountType);
+    public Mono<AccountTypeDoc> create(@RequestBody AccountTypeDoc accountTypeDoc){
+        return accountTypeService.create(accountTypeDoc);
     }
 
     @PutMapping("/{id}")
-    public Mono<AccountType> update(@RequestBody AccountType accountType, @PathVariable("id") String id){
-        return accountTypeService.update(id, accountType);
+    public Mono<AccountTypeDoc> update(@RequestBody AccountTypeDoc accountTypeDoc, @PathVariable("id") String id){
+        return accountTypeService.update(id, accountTypeDoc);
     }
 
     @DeleteMapping("/{id}")

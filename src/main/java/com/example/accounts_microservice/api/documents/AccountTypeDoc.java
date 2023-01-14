@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="account_type")
 @Data
-public class AccountType {
+public class AccountTypeDoc {
     @Id
     private String id;
 

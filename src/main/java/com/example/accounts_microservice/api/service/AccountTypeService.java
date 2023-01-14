@@ -1,15 +1,15 @@
 package com.example.accounts_microservice.api.service;
 
-import com.example.accounts_microservice.api.documents.AccountType;
+import com.example.accounts_microservice.api.documents.AccountTypeDoc;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface AccountTypeService {
-    Flux<AccountType> findAll();
-    Mono<AccountType> create(AccountType accountType);
+    Flux<AccountTypeDoc> findAll();
+    Mono<AccountTypeDoc> create(AccountTypeDoc accountTypeDoc);
 
-    Mono<AccountType> update(String id, AccountType accountType);
+    Mono<AccountTypeDoc> update(String id, AccountTypeDoc accountTypeDoc);
     Mono<Void> delete(String id);
 
-    Mono<AccountType> findByAccountTypeCode(int accountTypeCode);
+    Mono<AccountTypeDoc> findByAccountTypeCode(int accountTypeCode);
 }
