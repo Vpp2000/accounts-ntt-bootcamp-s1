@@ -8,6 +8,7 @@ public interface AccountTypeService {
     Flux<AccountTypeDoc> findAll();
     Mono<AccountTypeDoc> create(AccountTypeDoc accountTypeDoc);
 
+
     Mono<AccountTypeDoc> update(String id, AccountTypeDoc accountTypeDoc);
     Mono<Void> delete(String id);
 

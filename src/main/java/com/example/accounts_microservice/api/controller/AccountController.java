@@ -1,6 +1,7 @@
 package com.example.accounts_microservice.api.controller;
 
 import com.example.accounts_microservice.api.documents.Account;
+import com.example.accounts_microservice.api.dto.AccountCreationRequest;
 import com.example.accounts_microservice.api.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,8 +28,8 @@ public class AccountController {
 
 
     @PostMapping
-    public Mono<Account> create(@RequestBody Account account){
-        return accountService.create(account);
+    public Mono<Account> create(@RequestBody AccountCreationRequest accountCreationRequest){
+        return accountService.createAccordingRequirements(accountCreationRequest);
     }
 
     @PutMapping("/{id}")

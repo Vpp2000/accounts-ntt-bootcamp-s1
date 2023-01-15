@@ -9,10 +9,6 @@
     </encoder>
   </appender>
 
-  <logger name="console" level="info">
-    <appender-ref ref="STDOUT" />
-  </logger>
-
   <root level="info">
     <appender-ref ref="STDOUT"/>
   </root>

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class AccountCreationRequest {
     private ClientType clientType;
     private ProductType accountType;

@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private static final Logger logger_console = LoggerFactory.getLogger("console");
+    private static final Logger logger_console = LoggerFactory.getLogger("root");
 
     private final AccountRepository accountRepository;
 
@@ -33,10 +33,17 @@ public class AccountServiceImpl implements AccountService {
 
     public Mono<Account> createAccordingRequirements(AccountCreationRequest accountCreationRequest){
         Mono<Account> accountMono = accountRepository.findFirstByCustomerId(accountCreationRequest.getCustomerId());
-        return accountMono.flatMap(account -> saveCustomerAccount(account, accountCreationRequest)).switchIfEmpty(saveFirstCustomerAccount(accountCreationRequest));
+        return accountMono.hasElement().flatMap(flag -> {
+            if(flag == true){
+                return accountMono.flatMap(account -> saveCustomerAccount(account, accountCreationRequest));
+            }
+            else return saveFirstCustomerAccount(accountCreationRequest);
+        });
     }
 
     private Mono<Account> saveCustomerAccount(Account account, AccountCreationRequest accountCreationRequest){
+        logger_console.info("Creating account for customer with existing account");
+
         Account newAccount;
 
         if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
@@ -62,6 +69,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Mono<Account> saveFirstCustomerAccount(AccountCreationRequest accountCreationRequest){
+        logger_console.info("Creating first account for customer");
+
         Account newAccount;
 
         if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
