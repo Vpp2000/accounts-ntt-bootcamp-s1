@@ -7,4 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OperationRequest {
     private Double amount;
+    private String customerId;
 }

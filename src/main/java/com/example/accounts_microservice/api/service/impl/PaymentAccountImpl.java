@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -17,9 +16,14 @@ public class PaymentAccountImpl {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public Mono<Account> performWithdraw(String accountId, Double amount){
+    public Mono<Account> performWithdraw(String accountId, Double amount, String customerId){
         Mono<Account> accountMono = accountRepository.findById(accountId);
+
         return accountMono.flatMap(account -> {
+            if(!account.getCustomerId().equals(customerId)){
+                return Mono.error(new Exception(String.format("Account %s and customerId %s are not associated", accountId, customerId)));
+            }
+
             Account newAccount;
 
             try {
@@ -35,9 +39,14 @@ public class PaymentAccountImpl {
         });
     }
 
-    public Mono<Account> performDeposit(String accountId, Double amount){
+    @Transactional
+    public Mono<Account> performDeposit(String accountId, Double amount, String customerId){
         Mono<Account> accountMono = accountRepository.findById(accountId);
         return accountMono.flatMap(account -> {
+            if(!account.getCustomerId().equals(customerId)){
+                return Mono.error(new Exception(String.format("Account %s and customerId %s are not associated", accountId, customerId)));
+            }
+
             Account newAccount;
 
             try {
