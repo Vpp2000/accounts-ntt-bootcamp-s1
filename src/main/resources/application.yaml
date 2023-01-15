@@ -1,0 +1,13 @@
+spring:
+  #  data:
+#    mongodb:
+#      uri : mongodb://localhost:27017
+#      database: accounts_db
+#      auto-index-creation: true
+
+  application:
+    name: accounts-ntt-bootcamp-s1
+  cloud:
+    config:
+      enabled: true
+      uri: http://localhost:9000

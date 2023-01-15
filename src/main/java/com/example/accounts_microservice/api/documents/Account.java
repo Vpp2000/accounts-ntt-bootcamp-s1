@@ -1,6 +1,7 @@
 package com.example.accounts_microservice.api.documents;
 
 import com.example.accounts_microservice.api.dto.AccountCreationRequest;
+import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,6 +19,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Account {
     @Id
     private String id;
+
+    private ClientType clientType;
     private ProductType accountType;
     private UUID accountNumber;
     private String customerId;
@@ -30,6 +33,7 @@ public class Account {
 
     public static Account plazoFijoAccountFromAccountRequest(AccountCreationRequest accountCreationRequest){
         Account newAccount = new Account();
+        newAccount.setClientType(accountCreationRequest.getClientType());
         newAccount.setAccountType(ProductType.PLAZO_FIJO);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());
@@ -44,6 +48,7 @@ public class Account {
 
     public static Account ahorroAccountFromAccountRequest(AccountCreationRequest accountCreationRequest){
         Account newAccount = new Account();
+        newAccount.setClientType(accountCreationRequest.getClientType());
         newAccount.setAccountType(ProductType.AHORRO);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());
@@ -58,6 +63,7 @@ public class Account {
 
     public static Account cuentaCorrienteAccountFromAccountRequest(AccountCreationRequest accountCreationRequest){
         Account newAccount = new Account();
+        newAccount.setClientType(accountCreationRequest.getClientType());
         newAccount.setAccountType(ProductType.C_CORRIENTE);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());

@@ -92,7 +92,7 @@ public class AccountServiceImpl implements AccountService {
                 newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             } else {
-                logger_console.info("Account creation failed because is PERSON and is not a valid account type");
+                logger_console.info("Account creation failed because is COMPANY and is not a valid account type");
                 return Mono.empty();
             }
         } else {
