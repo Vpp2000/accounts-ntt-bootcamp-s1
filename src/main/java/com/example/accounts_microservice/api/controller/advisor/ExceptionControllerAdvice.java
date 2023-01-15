@@ -1,4 +1,4 @@
-package com.example.accounts_microservice.api.controller;
+package com.example.accounts_microservice.api.controller.advisor;
 
 
 import com.example.accounts_microservice.api.dto.ErrorMessage;

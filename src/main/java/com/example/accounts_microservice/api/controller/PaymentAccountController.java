@@ -21,7 +21,11 @@ public class PaymentAccountController {
 
     @PostMapping("/accounts/{accountId}/deposit")
     public Mono<Account> performDeposit(@PathVariable("accountId") String accountId, @RequestBody OperationRequest operationRequest){
-        System.out.println("Operation request: " + operationRequest.toString());
         return paymentAccount.performDeposit(accountId, operationRequest.getAmount());
+    }
+
+    @PostMapping("/accounts/{accountId}/withdraw")
+    public Mono<Account> performWithdraw(@PathVariable("accountId") String accountId, @RequestBody OperationRequest operationRequest){
+        return paymentAccount.performWithdraw(accountId, operationRequest.getAmount());
     }
 }

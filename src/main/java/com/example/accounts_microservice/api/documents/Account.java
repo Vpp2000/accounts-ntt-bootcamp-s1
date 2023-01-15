@@ -3,6 +3,7 @@ package com.example.accounts_microservice.api.documents;
 import com.example.accounts_microservice.api.dto.AccountCreationRequest;
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,12 @@ public class Account {
                 this.incrementTransactionQuantity();
                 break;
             case PLAZO_FIJO:
+                LocalDateTime now = LocalDateTime.now();
+                int currentDay = now.getDayOfMonth();
+
+                if(currentDay != operationDay){
+                    throw new Exception(String.format("You cannot perform this deposit today (%d), only on %d", currentDay, operationDay) );
+                }
                 if(transactionsLimit == transactionsQuantity){
                     throw new Exception(String.format("Your limit is %d and you've done %d until now", transactionsLimit, transactionsQuantity) );
                 }
@@ -69,7 +76,36 @@ public class Account {
             throw new Exception("Error: insuficient money amount");
         }
 
-        this.moneyAmount -= moneyAmount;
+        switch (accountType) {
+            case AHORRO:
+                if(transactionsLimit == transactionsQuantity){
+                    throw new Exception(String.format("Your limit is %d and you've done %d until now", transactionsLimit, transactionsQuantity) );
+                }
+
+                this.moneyAmount -= moneyAmount;
+                this.incrementTransactionQuantity();
+                break;
+            case C_CORRIENTE:
+                this.moneyAmount -= moneyAmount;
+                this.incrementTransactionQuantity();
+                break;
+            case PLAZO_FIJO:
+                LocalDateTime now = LocalDateTime.now();
+                int currentDay = now.getDayOfMonth();
+
+                if(currentDay >= operationDay){
+                    throw new Exception(String.format("You cannot perform this withdraw today (%d), only on %d", currentDay, operationDay) );
+                }
+                if(transactionsLimit == transactionsQuantity){
+                    throw new Exception(String.format("Your limit is %d and you've done %d until now", transactionsLimit, transactionsQuantity) );
+                }
+
+                this.moneyAmount -= moneyAmount;
+                this.incrementTransactionQuantity();
+                break;
+        }
+
+
     }
 
     public static Account plazoFijoAccountFromAccountRequest(AccountCreationRequest accountCreationRequest){

@@ -19,16 +19,19 @@ public class PaymentAccountImpl {
     @Transactional
     public Mono<Account> performWithdraw(String accountId, Double amount){
         Mono<Account> accountMono = accountRepository.findById(accountId);
-
         return accountMono.flatMap(account -> {
+            Account newAccount;
+
             try {
                 account.withDrawMoney(amount);
-                account.incrementTransactionQuantity();
             } catch (Exception e) {
-                throw Exceptions.propagate(e);
+                return Mono.error(e);
             }
 
-            return accountMono;
+            logger_console.info("Account: {}", account.toString());
+
+            newAccount = account;
+            return accountRepository.save(newAccount);
         });
     }
 
