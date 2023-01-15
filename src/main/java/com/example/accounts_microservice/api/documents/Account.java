@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,6 +19,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 public class Account {
+
+    private static final Logger logger_console = LoggerFactory.getLogger("root");
+
     @Id
     private String id;
 
@@ -30,6 +35,44 @@ public class Account {
     private Integer transactionsQuantity;
     private Date operationDate;
 
+    public void incrementTransactionQuantity(){
+        this.transactionsQuantity += 1;
+    }
+
+    public void depositMoney(Double money) throws Exception {
+        logger_console.info("deposit {} soles", money);
+
+        switch (accountType) {
+            case AHORRO:
+                if(transactionsLimit == transactionsQuantity){
+                    throw new Exception(String.format("Your limit is %d and you've done %d until now", transactionsLimit, transactionsQuantity) );
+                }
+
+                this.moneyAmount += money;
+                this.incrementTransactionQuantity();
+                break;
+            case C_CORRIENTE:
+                this.moneyAmount += money;
+                this.incrementTransactionQuantity();
+                break;
+            case PLAZO_FIJO:
+                if(transactionsLimit == transactionsQuantity){
+                    throw new Exception(String.format("Your limit is %d and you've done %d until now", transactionsLimit, transactionsQuantity) );
+                }
+
+                this.moneyAmount += money;
+                this.incrementTransactionQuantity();
+                break;
+        }
+    }
+
+    public void withDrawMoney(Double moneyAmount) throws Exception {
+        if(moneyAmount > this.moneyAmount){
+            throw new Exception("Error: insuficient money amount");
+        }
+
+        this.moneyAmount -= moneyAmount;
+    }
 
     public static Account plazoFijoAccountFromAccountRequest(AccountCreationRequest accountCreationRequest){
         Account newAccount = new Account();
