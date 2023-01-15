@@ -3,8 +3,6 @@ package com.example.accounts_microservice.api.documents;
 import com.example.accounts_microservice.api.dto.AccountCreationRequest;
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 // represents passive products
 @Document("accounts")
-@Data
 @NoArgsConstructor
+@Data
 public class Account {
 
     private static final Logger logger_console = LoggerFactory.getLogger("root");
@@ -33,7 +31,7 @@ public class Account {
     private Double moneyAmount;
     private Integer transactionsLimit;
     private Integer transactionsQuantity;
-    private Date operationDate;
+    private Integer operationDay;
 
     public void incrementTransactionQuantity(){
         this.transactionsQuantity += 1;
@@ -84,7 +82,7 @@ public class Account {
         newAccount.setMoneyAmount(0.0);
         newAccount.setTransactionsLimit(1);
         newAccount.setTransactionsQuantity(0);
-        newAccount.setOperationDate(accountCreationRequest.getOperationDate());
+        newAccount.setOperationDay(accountCreationRequest.getOperationDay());
 
         return newAccount;
     }
@@ -99,7 +97,7 @@ public class Account {
         newAccount.setMoneyAmount(0.0);
         newAccount.setTransactionsLimit(accountCreationRequest.getTransactionsLimit());
         newAccount.setTransactionsQuantity(0);
-        newAccount.setOperationDate(null);
+        newAccount.setOperationDay(null);
 
         return newAccount;
     }
@@ -114,7 +112,7 @@ public class Account {
         newAccount.setMoneyAmount(0.0);
         newAccount.setTransactionsLimit(null);
         newAccount.setTransactionsQuantity(0);
-        newAccount.setOperationDate(null);
+        newAccount.setOperationDay(null);
 
         return newAccount;
     }
