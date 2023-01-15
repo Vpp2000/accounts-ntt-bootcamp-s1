@@ -42,12 +42,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Mono<Account> saveCustomerAccount(Account account, AccountCreationRequest accountCreationRequest){
-        logger_console.info("Creating account for customer with existing account");
+        logger_console.info("Creating account for customer with existing account of type {}", account.getAccountType());
 
         Account newAccount;
 
         if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
-            if(account.getAccountType().equals(ProductType.PLAZO_FIJO)){
+            if(accountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
                 newAccount = Account.plazoFijoAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             }
