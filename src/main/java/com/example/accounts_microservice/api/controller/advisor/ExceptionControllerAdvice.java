@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.reactive.function.server.EntityResponse;
 import reactor.core.publisher.Mono;
 
+// RestCOntroller para mandar mensajes utiles al momento de lanzar una excepcion
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
 
@@ -22,7 +23,7 @@ public class ExceptionControllerAdvice {
                 500,
                 new Date(),
                 exception.getMessage(),
-                "Some description");
+                "ERROR EN SERVIDOR: " + exception.getMessage());
 
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);

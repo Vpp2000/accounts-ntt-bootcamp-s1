@@ -13,7 +13,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-// represents passive products
+// REPRESENTA LOS PRODUCOS PASIVOS, ES DECIR, CUENTAS BANCARIAS
 @Document("accounts")
 @NoArgsConstructor
 @Data
