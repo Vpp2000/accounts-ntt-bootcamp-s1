@@ -42,35 +42,35 @@ public class AccountServiceImpl implements AccountService {
         });
     }
 
-    private Mono<Account> saveCustomerAccount(Account account, AccountCreationRequest accountCreationRequest){
-        logger_console.info("Creating account for customer with existing account of type {}", account.getAccountType());
+    private Mono<Account> saveCustomerAccount(Account existingAccount, AccountCreationRequest accountCreationRequest){
+        logger_console.info("Creating account for customer {} with existing account of type {}", existingAccount.getClientType(), existingAccount.getAccountType());
 
         Account newAccount;
 
         if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
-            if(accountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
+            if(existingAccount.getAccountType().equals(ProductType.PLAZO_FIJO) && accountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
                 newAccount = Account.plazoFijoAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             }
             else {
                 logger_console.info("Account creation failed because is PERSON and is not PLAZO FIJO");
-                return Mono.empty();
+                return Mono.error(new Exception("Account creation failed because is PERSON and is not PLAZO FIJO"));
             }
         } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
-            if(accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
+            if(existingAccount.getAccountType().equals(ProductType.C_CORRIENTE) && accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
                 newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
                 return accountRepository.save(newAccount);
             } else {
                 logger_console.info("Account creation failed because is COMPANY and is not C_CORRIENTE");
-                return Mono.empty();
+                return Mono.error(new Exception("Account creation failed because is COMPANY and is not C_CORRIENTE"));
             }
         } else {
-            return Mono.empty();
+            return Mono.error(new Exception("Invalid CLIENT type"));
         }
     }
 
     private Mono<Account> saveFirstCustomerAccount(AccountCreationRequest accountCreationRequest){
-        logger_console.info("Creating first account for customer");
+        logger_console.info("Creating first account for customer of type {}", accountCreationRequest.getClientType());
 
         Account newAccount;
 
@@ -86,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
                 return accountRepository.save(newAccount);
             } else {
                 logger_console.info("Account creation failed because is PERSON and is not a valid account type");
-                return Mono.empty();
+                return Mono.error(new Exception("Account creation failed because is PERSON and is not a valid account type"));
             }
         } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
             if(accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
@@ -94,11 +94,12 @@ public class AccountServiceImpl implements AccountService {
                 return accountRepository.save(newAccount);
             } else {
                 logger_console.info("Account creation failed because is COMPANY and is not a valid account type");
-                return Mono.empty();
+                return Mono.error(new Exception("Account creation failed because is COMPANY and is not a valid account type"));
             }
         } else {
             logger_console.info("Account creation failed because is not PERSON and neither COMPANY");
-            return Mono.empty();
+            return Mono.error(new Exception("Account creation failed because is not PERSON and neither COMPANY"));
+
         }
     }
 
