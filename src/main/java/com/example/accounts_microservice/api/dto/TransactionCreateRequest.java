@@ -8,6 +8,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
+// CLASE USADA AL MOMENTO DE ENVIARLE AL MICROSERVICIO DE TRANSACCIONES PARA QUE REGISTRE LA TRANSACCION
 @Data
 @Builder
 public class TransactionCreateRequest {

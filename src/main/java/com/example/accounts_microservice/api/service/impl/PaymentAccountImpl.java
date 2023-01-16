@@ -21,6 +21,10 @@ public class PaymentAccountImpl {
     private static final Logger logger_console = LoggerFactory.getLogger("root");
     private final AccountRepository accountRepository;
 
+    // METODO UTILIZADO PARA REALIZAR UN RETIRO
+    // SE VALIDA QUE EL CLIENTE POSEA ESA CUENTA
+    // SE PROCEDE A ACTUALIZAR LA CUENTA
+    // SE REGISTRA LA TRANSACCION
     @Transactional
     public Mono<Account> performWithdraw(String accountId, Double amount, String customerId){
         Mono<Account> accountMono = accountRepository.findById(accountId);
@@ -58,6 +62,10 @@ public class PaymentAccountImpl {
         });
     }
 
+    // METODO UTILIZADO PARA REALIZAR UN DEPOSITO
+    // SE VALIDA QUE EL CLIENTE POSEA ESA CUENTA
+    // SE PROCEDE A ACTUALIZAR LA CUENTA
+    // SE REGISTRA LA TRANSACCION
     @Transactional
     public Mono<Account> performDeposit(String accountId, Double amount, String customerId){
         Mono<Account> accountMono = accountRepository.findById(accountId);
@@ -96,6 +104,7 @@ public class PaymentAccountImpl {
     }
 
 
+    // METODO UTILIZADO PARA REGISTRAR LA TRANSACCION EN EL MICROSERVICIO DE TRANSACCIONES
     private Mono<TransactionEntity> sendPayloadToTransactions(TransactionCreateRequest transactionCreateRequest){
         WebClient webClient = WebClient.create("http://localhost:8084");
 

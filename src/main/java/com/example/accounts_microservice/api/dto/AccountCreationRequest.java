@@ -5,6 +5,8 @@ import com.example.accounts_microservice.api.enums.ProductType;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+
+// CLASE USADA PARA LA CREACION DE UNA CUENTA
 @Data
 @RequiredArgsConstructor
 public class AccountCreationRequest {

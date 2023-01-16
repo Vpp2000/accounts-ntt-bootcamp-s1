@@ -5,6 +5,7 @@ import com.example.accounts_microservice.api.enums.TransactionType;
 import java.util.Date;
 import lombok.Data;
 
+// CLASE PARA RECIBIR LA TRANSACCION CREADA POR EL MICROSERVICIO DE TRANSACCIONES
 @Data
 public class TransactionEntity {
     private String id;

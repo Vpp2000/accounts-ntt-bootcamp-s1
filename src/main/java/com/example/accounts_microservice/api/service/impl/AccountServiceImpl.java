@@ -32,12 +32,13 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(id);
     }
 
-    @Override
-    public Mono<Account> create(Account account) {
-        return accountRepository.save(account);
-    }
 
-    public Mono<Account> createAccordingRequirements(AccountCreationRequest accountCreationRequest){
+    // CLASE PARA CREAR UNA CUENTA DE ACUERDO A LOS REQUERIMIENTOS
+    // SE VERIFICA SI EL USUARIO YA POSEE ALGUNA CUENTA
+    // SI YA POSEE UNA CUENTA SE EJECUTA UNA FUNCION
+    // CASO CONTRARIO SE EJECUTA OTRA
+    @Override
+    public Mono<Account> create(AccountCreationRequest accountCreationRequest){
         Mono<Account> accountMono = accountRepository.findFirstByCustomerId(accountCreationRequest.getCustomerId());
         return accountMono.hasElement().flatMap(flag -> {
             if(flag == true){
@@ -47,6 +48,9 @@ public class AccountServiceImpl implements AccountService {
         });
     }
 
+
+    // ESTO OCURRE SI SE TIENE QUE EL USUARIO YA POSEÍA ALGUNA CUENTA Y SE HACEN LAS VERIFICACIONES PERTINENTES
+    // PARA PODER CUMPLIR CON LOS REQUERIMIENTOS
     private Mono<Account> saveCustomerAccount(Account existingAccount, AccountCreationRequest accountCreationRequest){
         logger_console.info("Creating account for customer {} with existing account of type {}", existingAccount.getClientType(), existingAccount.getAccountType());
 
@@ -74,6 +78,8 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    // ESTO OCURRE SI SE TIENE QUE EL USUARIO NO POSEÍA NINGUNA CUENTA Y SE HACEN LAS VERIFICACIONES PERTINENTES
+    // PARA PODER CUMPLIR CON LOS REQUERIMIENTOS
     private Mono<Account> saveFirstCustomerAccount(AccountCreationRequest accountCreationRequest){
         logger_console.info("Creating first account for customer of type {}", accountCreationRequest.getClientType());
 
@@ -122,6 +128,7 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.deleteById(id);
     }
 
+    // METODO UTILIZADO PARA OBTENER EL SALDO DE UNA CUENTA
     @Override
     public Mono<BalanceResponse> getBalance(String accountId, String customerId) {
         Mono<Account> accountMono = accountRepository.findById(accountId);
