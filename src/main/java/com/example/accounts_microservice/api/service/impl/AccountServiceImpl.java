@@ -28,6 +28,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Mono<Account> findById(String id) {
+        return accountRepository.findById(id);
+    }
+
+    @Override
     public Mono<Account> create(Account account) {
         return accountRepository.save(account);
     }

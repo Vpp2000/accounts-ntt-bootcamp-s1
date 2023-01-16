@@ -6,6 +6,8 @@ import com.example.accounts_microservice.api.dto.BalanceRequest;
 import com.example.accounts_microservice.api.dto.BalanceResponse;
 import com.example.accounts_microservice.api.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +46,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> delete(@PathVariable("id") String id){
-        return accountService.delete(id);
+    public Mono<ResponseEntity<Void>> delete(@PathVariable("id") String id){
+        return accountService.findById(id).flatMap(p -> accountService.delete(id).then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
     }
 }

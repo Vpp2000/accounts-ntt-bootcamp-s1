@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 public interface AccountService {
     Flux<Account> findAll();
+
+    Mono<Account> findById(String id);
     Mono<Account> create(Account account);
     Mono<Account> createAccordingRequirements(AccountCreationRequest accountCreationRequest);
     Mono<Account> update(String id, Account account);
