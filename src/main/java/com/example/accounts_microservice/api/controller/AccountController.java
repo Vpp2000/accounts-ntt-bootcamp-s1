@@ -37,7 +37,7 @@ public class AccountController {
 
     @PostMapping
     public Mono<Account> create(@RequestBody AccountCreationRequest accountCreationRequest){
-        return accountService.createAccordingRequirements(accountCreationRequest);
+        return accountService.create(accountCreationRequest);
     }
 
     @PutMapping("/{id}")

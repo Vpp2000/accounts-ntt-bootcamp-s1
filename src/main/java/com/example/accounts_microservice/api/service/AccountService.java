@@ -10,8 +10,8 @@ public interface AccountService {
     Flux<Account> findAll();
 
     Mono<Account> findById(String id);
-    Mono<Account> create(Account account);
-    Mono<Account> createAccordingRequirements(AccountCreationRequest accountCreationRequest);
+
+    Mono<Account> create(AccountCreationRequest accountCreationRequest);
     Mono<Account> update(String id, Account account);
     Mono<Void> delete(String id);
     Mono<BalanceResponse> getBalance(String accountId, String customerId);
