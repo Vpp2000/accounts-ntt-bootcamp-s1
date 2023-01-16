@@ -2,6 +2,7 @@ package com.example.accounts_microservice.api.service.impl;
 
 import com.example.accounts_microservice.api.documents.Account;
 import com.example.accounts_microservice.api.dto.AccountCreationRequest;
+import com.example.accounts_microservice.api.dto.BalanceResponse;
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
 import com.example.accounts_microservice.api.repository.AccountRepository;
@@ -113,6 +114,20 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Mono<Void> delete(String id) {
         return accountRepository.deleteById(id);
+    }
+
+    @Override
+    public Mono<BalanceResponse> getBalance(String accountId, String customerId) {
+        Mono<Account> accountMono = accountRepository.findById(accountId);
+
+        return accountMono.flatMap(account -> {
+            if(!account.getCustomerId().equals(customerId)){
+                return Mono.error(new Exception(String.format("Account %s and customerId %s are not associated", accountId, customerId)));
+            }
+
+            BalanceResponse balanceResponse = BalanceResponse.builder().balance(account.getMoneyAmount()).accountType(account.getAccountType()).build();
+            return Mono.just(balanceResponse);
+        });
     }
 
 }

@@ -2,6 +2,8 @@ package com.example.accounts_microservice.api.controller;
 
 import com.example.accounts_microservice.api.documents.Account;
 import com.example.accounts_microservice.api.dto.AccountCreationRequest;
+import com.example.accounts_microservice.api.dto.BalanceRequest;
+import com.example.accounts_microservice.api.dto.BalanceResponse;
 import com.example.accounts_microservice.api.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +28,10 @@ public class AccountController {
         return accountService.findAll();
     }
 
+    @GetMapping("/{accountId}/balance")
+    public Mono<BalanceResponse> getAccountBalance(@PathVariable("accountId") String accountId, @RequestBody BalanceRequest balanceRequest){
+        return accountService.getBalance(accountId, balanceRequest.getCustomerId());
+    }
 
     @PostMapping
     public Mono<Account> create(@RequestBody AccountCreationRequest accountCreationRequest){
