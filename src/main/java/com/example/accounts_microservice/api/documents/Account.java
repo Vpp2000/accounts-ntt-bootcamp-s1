@@ -1,14 +1,16 @@
 package com.example.accounts_microservice.api.documents;
 
-import com.example.accounts_microservice.api.dto.AccountCreationRequest;
+import com.example.accounts_microservice.api.dto.account_creation.AccountCreationRequest;
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,18 +23,24 @@ public class Account {
 
     private static final Logger logger_console = LoggerFactory.getLogger("root");
 
+    @Value("{account.trans_limit}")
+    private static int transactionsLimit;
+
     @Id
     private String id;
 
     private ClientType clientType;
-    private ProductType accountType;
-    private UUID accountNumber;
-    private String customerId;
-    private Double maintainanceComission;
-    private Double moneyAmount;
-    private Integer transactionsLimit;
-    private Integer transactionsQuantity;
-    private Integer operationDay;
+    private ProductType accountType;  // SE QUEDA
+    private UUID accountNumber;     // SE QUEDA
+    private String customerId;   //  SE QUEDA
+    //private Double maintainanceComission;   // SE VA PORQUE ESTARÁ EN EL YAML
+    private Double moneyAmount;   // QUEDA
+    //private Integer transactionsLimit;  // SE VA , ESTA EN EL YAML
+    private Integer transactionsQuantity = 0;  // queda
+    private Integer operationDay;  // queda
+
+    private List<SignerHolder> holders;  // queda
+    private List<SignerHolder> signers; // queda
 
     public void incrementTransactionQuantity(){
         this.transactionsQuantity += 1;
@@ -114,9 +122,7 @@ public class Account {
         newAccount.setAccountType(ProductType.PLAZO_FIJO);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());
-        newAccount.setMaintainanceComission(0.0);
         newAccount.setMoneyAmount(0.0);
-        newAccount.setTransactionsLimit(1);
         newAccount.setTransactionsQuantity(0);
         newAccount.setOperationDay(accountCreationRequest.getOperationDay());
 
@@ -129,9 +135,7 @@ public class Account {
         newAccount.setAccountType(ProductType.AHORRO);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());
-        newAccount.setMaintainanceComission(0.0);
         newAccount.setMoneyAmount(0.0);
-        newAccount.setTransactionsLimit(accountCreationRequest.getTransactionsLimit());
         newAccount.setTransactionsQuantity(0);
         newAccount.setOperationDay(null);
 
@@ -144,9 +148,7 @@ public class Account {
         newAccount.setAccountType(ProductType.C_CORRIENTE);
         newAccount.setAccountNumber(UUID.randomUUID());
         newAccount.setCustomerId(accountCreationRequest.getCustomerId());
-        newAccount.setMaintainanceComission(accountCreationRequest.getMaintainanceComission());
         newAccount.setMoneyAmount(0.0);
-        newAccount.setTransactionsLimit(null);
         newAccount.setTransactionsQuantity(0);
         newAccount.setOperationDay(null);
 

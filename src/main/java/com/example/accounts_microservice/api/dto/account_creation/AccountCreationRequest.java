@@ -1,4 +1,4 @@
-package com.example.accounts_microservice.api.dto;
+package com.example.accounts_microservice.api.dto.account_creation;
 
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;

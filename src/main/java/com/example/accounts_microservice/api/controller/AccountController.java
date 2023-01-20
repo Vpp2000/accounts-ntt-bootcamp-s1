@@ -1,10 +1,13 @@
 package com.example.accounts_microservice.api.controller;
 
 import com.example.accounts_microservice.api.documents.Account;
-import com.example.accounts_microservice.api.dto.AccountCreationRequest;
+import com.example.accounts_microservice.api.dto.account_creation.AccountCreationRequest;
 import com.example.accounts_microservice.api.dto.BalanceRequest;
 import com.example.accounts_microservice.api.dto.BalanceResponse;
+import com.example.accounts_microservice.api.dto.account_creation.CompanyAccountCreationRequest;
+import com.example.accounts_microservice.api.dto.account_creation.PersonAccountCreationRequest;
 import com.example.accounts_microservice.api.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,8 +40,18 @@ public class AccountController {
     }
 
     @PostMapping
-    public Mono<Account> create(@RequestBody AccountCreationRequest accountCreationRequest){
-        return accountService.create(accountCreationRequest);
+    public Mono<Account> create(@RequestBody Account account){
+        return accountService.create(account);
+    }
+
+    @PostMapping("/company")
+    public Mono<ResponseEntity<Account>> createForCompany(@Valid @RequestBody CompanyAccountCreationRequest companyAccountCreationRequest){
+        return accountService.createCompanyAccount(companyAccountCreationRequest).map(account -> ResponseEntity.status(201).body(account));
+    }
+
+    @PostMapping("/person")
+    public Mono<ResponseEntity<Account>> createForPerson(@Valid @RequestBody PersonAccountCreationRequest personAccountCreationRequest){
+        return accountService.createPersonAccount(personAccountCreationRequest).map(account -> ResponseEntity.status(201).body(account));
     }
 
     @PutMapping("/{id}")

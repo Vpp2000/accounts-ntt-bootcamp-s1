@@ -6,3 +6,10 @@ spring:
       uri: http://localhost:8081
       username: consumer
       password: consumer
+
+
+accounts:
+  trans_limit: 50.0
+  trans_comission: 12.0
+  maintainance_comission: 50
+  minimum_money: 100

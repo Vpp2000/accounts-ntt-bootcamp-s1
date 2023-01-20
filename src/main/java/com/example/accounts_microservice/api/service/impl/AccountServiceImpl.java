@@ -1,15 +1,18 @@
 package com.example.accounts_microservice.api.service.impl;
 
 import com.example.accounts_microservice.api.documents.Account;
-import com.example.accounts_microservice.api.dto.AccountCreationRequest;
 import com.example.accounts_microservice.api.dto.BalanceResponse;
+import com.example.accounts_microservice.api.dto.account_creation.CompanyAccountCreationRequest;
+import com.example.accounts_microservice.api.dto.account_creation.PersonAccountCreationRequest;
 import com.example.accounts_microservice.api.enums.ClientType;
 import com.example.accounts_microservice.api.enums.ProductType;
 import com.example.accounts_microservice.api.repository.AccountRepository;
 import com.example.accounts_microservice.api.service.AccountService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,8 +22,10 @@ import reactor.core.publisher.Mono;
 public class AccountServiceImpl implements AccountService {
 
     private static final Logger logger_console = LoggerFactory.getLogger("root");
-
     private final AccountRepository accountRepository;
+
+    @Value("${accounts.minimum_money}")
+    private Double minimumMoney;
 
     @Override
     public Flux<Account> findAll() {
@@ -32,103 +37,20 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(id);
     }
 
-
-    // CLASE PARA CREAR UNA CUENTA DE ACUERDO A LOS REQUERIMIENTOS
-    // SE VERIFICA SI EL USUARIO YA POSEE ALGUNA CUENTA
-    // SI YA POSEE UNA CUENTA SE EJECUTA UNA FUNCION
-    // CASO CONTRARIO SE EJECUTA OTRA
     @Override
-    public Mono<Account> create(AccountCreationRequest accountCreationRequest){
-        Mono<Account> accountMono = accountRepository.findFirstByCustomerId(accountCreationRequest.getCustomerId());
-        return accountMono.hasElement().flatMap(flag -> {
-            if(flag == true){
-                return accountMono.flatMap(account -> saveCustomerAccount(account, accountCreationRequest));
-            }
-            else return saveFirstCustomerAccount(accountCreationRequest);
-        });
+    public Mono<Account> create(Account account){
+        return accountRepository.save(account);
     }
-
-
-    // ESTO OCURRE SI SE TIENE QUE EL USUARIO YA POSEÍA ALGUNA CUENTA Y SE HACEN LAS VERIFICACIONES PERTINENTES
-    // PARA PODER CUMPLIR CON LOS REQUERIMIENTOS
-    private Mono<Account> saveCustomerAccount(Account existingAccount, AccountCreationRequest accountCreationRequest){
-        logger_console.info("Creating account for customer {} with existing account of type {}", existingAccount.getClientType(), existingAccount.getAccountType());
-
-        Account newAccount;
-
-        if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
-            if(existingAccount.getAccountType().equals(ProductType.PLAZO_FIJO) && accountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
-                newAccount = Account.plazoFijoAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            }
-            else {
-                logger_console.info("Account creation failed because is PERSON and is not PLAZO FIJO");
-                return Mono.error(new Exception("Account creation failed because is PERSON and is not PLAZO FIJO"));
-            }
-        } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
-            if(existingAccount.getAccountType().equals(ProductType.C_CORRIENTE) && accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
-                newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            } else {
-                logger_console.info("Account creation failed because is COMPANY and is not C_CORRIENTE");
-                return Mono.error(new Exception("Account creation failed because is COMPANY and is not C_CORRIENTE"));
-            }
-        } else {
-            return Mono.error(new Exception("Invalid CLIENT type"));
-        }
-    }
-
-    // ESTO OCURRE SI SE TIENE QUE EL USUARIO NO POSEÍA NINGUNA CUENTA Y SE HACEN LAS VERIFICACIONES PERTINENTES
-    // PARA PODER CUMPLIR CON LOS REQUERIMIENTOS
-    private Mono<Account> saveFirstCustomerAccount(AccountCreationRequest accountCreationRequest){
-        logger_console.info("Creating first account for customer of type {}", accountCreationRequest.getClientType());
-
-        Account newAccount;
-
-        if(accountCreationRequest.getClientType().equals(ClientType.PERSON)){
-            if(accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
-                newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            } else if (accountCreationRequest.getAccountType().equals(ProductType.AHORRO)) {
-                newAccount = Account.ahorroAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            } else if (accountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
-                newAccount = Account.plazoFijoAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            } else {
-                logger_console.info("Account creation failed because is PERSON and is not a valid account type");
-                return Mono.error(new Exception("Account creation failed because is PERSON and is not a valid account type"));
-            }
-        } else if(accountCreationRequest.getClientType().equals(ClientType.COMPANY)){
-            if(accountCreationRequest.getAccountType().equals(ProductType.C_CORRIENTE)){
-                newAccount = Account.cuentaCorrienteAccountFromAccountRequest(accountCreationRequest);
-                return accountRepository.save(newAccount);
-            } else {
-                logger_console.info("Account creation failed because is COMPANY and is not a valid account type");
-                return Mono.error(new Exception("Account creation failed because is COMPANY and is not a valid account type"));
-            }
-        } else {
-            logger_console.info("Account creation failed because is not PERSON and neither COMPANY");
-            return Mono.error(new Exception("Account creation failed because is not PERSON and neither COMPANY"));
-
-        }
-    }
-
     @Override
     public Mono<Account> update(String id, Account account) {
-        Mono<Account> currentAccountMono = accountRepository.findById(id);
-        return currentAccountMono.flatMap(currentAccount -> {
-            account.setId(id);
-            return accountRepository.save(account);
-        });
+        return null;
     }
 
     @Override
     public Mono<Void> delete(String id) {
-        return accountRepository.deleteById(id);
+        return null;
     }
 
-    // METODO UTILIZADO PARA OBTENER EL SALDO DE UNA CUENTA
     @Override
     public Mono<BalanceResponse> getBalance(String accountId, String customerId) {
         Mono<Account> accountMono = accountRepository.findById(accountId);
@@ -142,5 +64,81 @@ public class AccountServiceImpl implements AccountService {
             return Mono.just(balanceResponse);
         });
     }
+
+    public Mono<Account> createCompanyAccount(CompanyAccountCreationRequest companyAccountCreationRequest) {
+        if(companyAccountCreationRequest.getHolders().isEmpty()) {
+            return Mono.error(new Exception("Holders cannot be empty"));
+        }
+
+        if(companyAccountCreationRequest.getMoneyAmount() < minimumMoney){
+            return Mono.error(new Exception(String.format("Minimum amount of %f is required", minimumMoney)));
+        }
+
+        Account newAccount = new Account();
+        newAccount.setClientType(ClientType.COMPANY);
+        newAccount.setAccountType(ProductType.C_CORRIENTE);
+        newAccount.setAccountNumber(UUID.randomUUID());
+        newAccount.setCustomerId(companyAccountCreationRequest.getCustomerId());
+        newAccount.setMoneyAmount(companyAccountCreationRequest.getMoneyAmount());
+        newAccount.setOperationDay(null);
+        newAccount.setSigners(companyAccountCreationRequest.getSigners());
+        newAccount.setHolders(companyAccountCreationRequest.getHolders());
+
+        return accountRepository.save(newAccount);
+    }
+
+    public Mono<Account> createPersonAccount(PersonAccountCreationRequest personAccountCreationRequest){
+        if(personAccountCreationRequest.getMoneyAmount() < minimumMoney){
+            return Mono.error(new Exception(String.format("Minimum amount of %f is required", minimumMoney)));
+        }
+
+        Mono<Account> accountMono = accountRepository.findFirstByCustomerId(personAccountCreationRequest.getCustomerId());
+
+        return accountMono.hasElement().flatMap(hasAccount -> {
+            if(hasAccount){
+                return accountMono.flatMap(account -> saveCustomerAccount(account, personAccountCreationRequest));
+            }
+            else return saveFirstCustomerAccount(personAccountCreationRequest);
+        });
+
+    }
+
+    private Mono<Account> saveCustomerAccount(Account existingAccount, PersonAccountCreationRequest personAccountCreationRequest){
+        logger_console.info("Creating account for customer {} with existing account of type {}", existingAccount.getClientType(), existingAccount.getAccountType());
+
+        Account newAccount = new Account();
+
+        if(existingAccount.getAccountType().equals(ProductType.PLAZO_FIJO) && personAccountCreationRequest.getAccountType().equals(ProductType.PLAZO_FIJO)){
+            newAccount.setClientType(ClientType.PERSON);
+            newAccount.setAccountType(personAccountCreationRequest.getAccountType());
+            newAccount.setAccountNumber(UUID.randomUUID());
+            newAccount.setCustomerId(personAccountCreationRequest.getCustomerId());
+            newAccount.setMoneyAmount(personAccountCreationRequest.getMoneyAmount());
+            newAccount.setOperationDay(personAccountCreationRequest.getOperationDay());
+
+            return accountRepository.save(newAccount);
+        }
+        else {
+                logger_console.info("Account creation failed because this person already hast an account");
+                return Mono.error(new Exception("Account creation failed because this person already hast an account"));
+        }
+    }
+
+    // ESTO OCURRE SI SE TIENE QUE EL USUARIO NO POSEÍA NINGUNA CUENTA Y SE HACEN LAS VERIFICACIONES PERTINENTES
+    // PARA PODER CUMPLIR CON LOS REQUERIMIENTOS
+    private Mono<Account> saveFirstCustomerAccount(PersonAccountCreationRequest personAccountCreationRequest){
+        Account newAccount = new Account();
+
+        newAccount.setClientType(ClientType.PERSON);
+        newAccount.setAccountType(personAccountCreationRequest.getAccountType());
+        newAccount.setAccountNumber(UUID.randomUUID());
+        newAccount.setCustomerId(personAccountCreationRequest.getCustomerId());
+        newAccount.setMoneyAmount(personAccountCreationRequest.getMoneyAmount());
+        newAccount.setOperationDay(personAccountCreationRequest.getOperationDay());
+
+        return accountRepository.save(newAccount);
+
+    }
+
 
 }
